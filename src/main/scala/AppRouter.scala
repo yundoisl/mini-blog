@@ -1,6 +1,6 @@
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.stream.{ActorMaterializer, IOResult}
-import Utils._
+import blogService._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +14,7 @@ class AppRouter(materializer: ActorMaterializer)
     concat(path("signup") {
       post {
         parameters('author.as[String]) {
-          (author) =>
+          author =>
             val signUpResult = signUp(author)
 
             onComplete(signUpResult) {

@@ -5,13 +5,13 @@ import scala.util.{Failure, Success, Using}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object Utils {
+object blogService {
 
-  val logger: Logger = Logger("Utils")
+  val logger: Logger = Logger("Blog Service")
 
   def signUp(author: String): Future[String] = {
     Future {
-      val generatedPassword = new scala.util.Random(author.hashCode).nextString(20)
+      val generatedPassword = new scala.util.Random(author.hashCode).nextInt(Int.MaxValue).toString
       Using(Datasource.getConnection()) { connection =>
         val statement = connection.createStatement()
         val sql = s"INSERT INTO author VALUES(DEFAULT, '$author', '$generatedPassword');"

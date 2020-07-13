@@ -1,7 +1,7 @@
 import com.typesafe.scalalogging.Logger
 import org.scalatest.flatspec.AsyncFlatSpec
 
-class UtilsTest extends AsyncFlatSpec {
+class BlogServiceTest extends AsyncFlatSpec {
 
   val logger: Logger = Logger("UtilsTest")
 
@@ -13,7 +13,7 @@ class UtilsTest extends AsyncFlatSpec {
     val category = "some random category"
     val author = "author"
 
-    Utils.createCard(name, content, category, author).map { id =>
+    blogService.createCard(name, content, category, author).map { id =>
       logger.info("id : " + id)
 
       assert(id > 0)
@@ -25,7 +25,7 @@ class UtilsTest extends AsyncFlatSpec {
   it should "return True because the user is already registered" in {
     val author = "test"
     val password = "炴㲮鯸쵇厳夗ₙ㒞즞혅듞儠鮈馽ᯑ땶슚鬧㔕Ḥ"
-    Utils.authenticateAuthor(author, password). map { isUserRegistered =>
+    blogService.authenticateAuthor(author, password). map { isUserRegistered =>
 
       assert(isUserRegistered == true)
     }
@@ -34,7 +34,7 @@ class UtilsTest extends AsyncFlatSpec {
   it should "return False because such user does not exist" in {
     val author = "nonExistent"
     val password = "nonExistent"
-    Utils.authenticateAuthor(author, password). map { isUserRegistered =>
+    blogService.authenticateAuthor(author, password). map { isUserRegistered =>
 
       assert(isUserRegistered == false)
     }
