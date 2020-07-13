@@ -8,6 +8,7 @@ scalaVersion := "2.13.3"
 
 val akkaVersion = "2.5.23"
 val akkaHttpVersion = "10.1.8"
+val scalatestVersion = "3.2.0"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -18,5 +19,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
-  "org.postgresql" % "postgresql" % "42.2.11"
+  "org.postgresql" % "postgresql" % "42.2.11",
+  "org.scalatest" %% "scalatest" % scalatestVersion % "test"
 )
