@@ -1,3 +1,5 @@
+enablePlugins(JavaAppPackaging, AshScriptPlugin)
+
 name := "mini-blog"
 
 version := "0.1"
@@ -15,5 +17,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "org.postgresql" % "postgresql" % "42.2.11"
 )
