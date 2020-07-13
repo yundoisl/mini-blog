@@ -1,4 +1,7 @@
 #### This is WIP 
+This is continuation work from the point I delivered (check `unfinished` branch)
+
+I wanted to improve because it was not finished yet
 
 ### What is done
 
