@@ -15,3 +15,10 @@
 
 - run the application by writing on your console `sbt runMain`
 - curl the endpoint `curl localhost:9000/generatepassword?author=love`
+
+### stack
+
+- scala
+- akka http
+- postgresql
+- docker
