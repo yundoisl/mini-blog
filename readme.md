@@ -2,22 +2,25 @@
 
 ### What is done
 
-- setting the docker for postgresql with initial database schema
-- generate password method based based user input, namely 'author'.
-  
-### What was being done at this moment
-- adding database access layer
-
+- `sign up` and `create cards` features
+- `postgres` and `mini-blog` are dockerized
+ 
 ### What is left to do
-- add other methods like `delete`, `create` cards
+- add other methods like `delete` cards
 
 ### How to run
 
-- run the application by writing on your console `sbt runMain`
-- curl the endpoint `curl localhost:9000/generatepassword?author=love`
+- Execute `./runDockerCompose.sh`, it will start the docker with two containers(postgres, mini blog app)
+
+- Sign up a new `author`
+`curl --request POST "localhost:9000/signup?author=yourname"`
+
+- Create a new card  
+`curl --request POST "localhost:9000/create?name=name&content=content&category=category&author=yourname&password=generatedpassword"`
 
 ### stack
 
+- sbt
 - scala
 - akka http
 - postgresql
