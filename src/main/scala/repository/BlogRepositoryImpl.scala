@@ -2,7 +2,6 @@ package repository
 
 import java.sql.ResultSet
 
-import com.typesafe.scalalogging.Logger
 import postgresql.Datasource
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -10,8 +9,6 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success, Using}
 
 class BlogRepositoryImpl extends BlogRepository {
-
-  val logger: Logger = Logger("Blog Service")
 
   def executeQuery(sql: String): ResultSet = {
     Using(Datasource.getConnection()) { connection =>
@@ -32,7 +29,6 @@ class BlogRepositoryImpl extends BlogRepository {
     } match {
       case Success(updatedRows) => updatedRows
       case Failure(exception) => {
-        exception.printStackTrace() //TODO : remove
         throw new RuntimeException(exception)
       }
     }
@@ -40,8 +36,6 @@ class BlogRepositoryImpl extends BlogRepository {
 
   def createAuthor(author: String): Future[String] = {
     Future {
-      // TODO: (Note) generate a random pw based on the given username `author`, so `author` is the seed for the Random function, for every single `author` same password will be generated because it is using the same seed
-      // for same strings same hashCode will be generated
       val generatedPassword = new scala.util.Random(author.hashCode).nextInt(Int.MaxValue).toString
       val sql = s"INSERT INTO author VALUES(DEFAULT, '$author', '$generatedPassword');"
       executeUpdate(sql)

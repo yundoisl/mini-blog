@@ -97,7 +97,7 @@ class BlogControllerTest
 
     request ~>  controller.update ~> check {
       assert(status.isSuccess)
-      assert(responseAs[String].contains(s"Your card $id has been updated"))
+      assert(responseAs[String].contains(s"Your card id: $id has been updated"))
     }
   }
 
@@ -115,7 +115,7 @@ class BlogControllerTest
 
     request ~>  controller.delete ~> check {
       assert(status.isSuccess)
-      assert(responseAs[String].contains(s"Your card $id has been deleted"))
+      assert(responseAs[String].contains(s"Your card id: $id has been deleted"))
     }
   }
 

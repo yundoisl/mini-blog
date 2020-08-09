@@ -34,3 +34,4 @@ libraryDependencies ++= Seq(
   "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion % "test"
 )
 // TODO: organize version
+// TODO: logger may not needed

@@ -12,5 +12,3 @@ CREATE TABLE card(
     category VARCHAR(20),
     author INTEGER REFERENCES author(id)
 );
-
-INSERT INTO author VALUES(DEFAULT, 'test', '1033386069');

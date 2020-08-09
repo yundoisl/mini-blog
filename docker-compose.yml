@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgresql:
+    build: ./postgresql
+    ports:
+      - "5432:5432"
+    env_file:
+      - postgresql/config/postgresqlConfig.env
+  mini-blog:
+    build: ./
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgresql

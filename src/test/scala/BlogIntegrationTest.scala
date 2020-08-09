@@ -69,8 +69,8 @@ class BlogIntegrationTest
     }
   }
 
-  it should "succesfully update an existing card owned by `test` author" in {
-    val expectedText = "Your card 1 has been updated"
+  it should "successfully update an existing card owned by `test` author" in {
+    val expectedText = "Your card id: 1 has been updated"
     val requestBody = """{"id": 1, "name": "My First Update", "content": "Updated", "category": "books", "status": "updated"}"""
     val requestUri = s"http://$host:$port/update"
     val request = createPostRequest(requestUri, requestBody, headers = Seq(authorizationHeader))
@@ -82,7 +82,7 @@ class BlogIntegrationTest
   }
 
   it should "successfully delete a card owned by `test` author" in {
-    val expectedText = "Your card 1 has been deleted"
+    val expectedText = "Your card id: 1 has been deleted"
     val requestBody = """{"id": 1}"""
     val requestUri = s"http://$host:$port/delete"
     val request = createPostRequest(requestUri, requestBody, headers = Seq(authorizationHeader))
