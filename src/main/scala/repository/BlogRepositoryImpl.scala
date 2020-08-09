@@ -81,5 +81,15 @@ class BlogRepositoryImpl extends BlogRepository {
     }
   }
 
-  def deleteCard(id: Int, author: String): Future[Boolean] = ???
-}
+  def deleteCard(id: Int, author: String): Future[Boolean]= {
+    Future {
+      val sql = s"""DELETE FROM card C
+                   |USING author AS A
+                   |WHERE A.id = C.author AND C.id = $id AND A.name = '$author';""".stripMargin
+      val updatedRowCount = executeUpdate(sql)
+      updatedRowCount match {
+        case 1 => true
+        case _ => false
+      }
+    }
+  }}

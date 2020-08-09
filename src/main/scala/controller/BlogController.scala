@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCode, StatusCod
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server.Directives.{as, complete, entity, onComplete, optionalHeaderValueByName, provide, respondWithHeader}
 import akka.http.scaladsl.server.{Directive1, Route}
-import model.{CreateCardRequest, JwtExpiredError, JwtNotValidError, JwtValidWith, LoginRequest, SignUpRequest, UpdateCardRequest}
+import model.{CreateCardRequest, DeleteCardRequest, JwtExpiredError, JwtNotValidError, JwtValidWith, LoginRequest, SignUpRequest, UpdateCardRequest}
 import pdi.jwt.JwtAlgorithm
 import io.circe.generic.auto.exportDecoder
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
@@ -72,6 +72,20 @@ class BlogController(repository: BlogRepository) extends JwtService {
             completeWith(StatusCodes.Unauthorized, s"Given card $id does not exist or you are not the owner of the card")
           case Failure(ex) =>
             completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
+        }
+    }
+  }
+
+  def delete: Route = authenticated { author =>
+    entity(as[DeleteCardRequest]) {
+      case DeleteCardRequest(id) =>
+        onComplete(repository.deleteCard(id, author)) {
+          case Success(true) =>
+            completeWith(StatusCodes.OK,s"Your card $id has been deleted")
+          case Success(false) =>
+            completeWith(StatusCodes.Unauthorized,"The card: $id does not exist or you are not the owner of the card")
+          case Failure(ex) =>
+            completeWith(StatusCodes.InternalServerError,s"An error occurred: ${ex.getMessage}")
         }
     }
   }
