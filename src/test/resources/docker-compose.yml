@@ -2,13 +2,15 @@ version: '3'
 services:
   postgresql:
     build: ./postgresql
-    container_name: postgresql
+#    container_name: postgresql
     ports:
       - "5432:5432"
     env_file:
       - postgresql/config/postgresqlConfig.env
   mini-blog:
-    build: ./
+    build:
+      context: ../../../
+      dockerfile: Dockerfile
     ports:
       - "9000:9000"
     depends_on:

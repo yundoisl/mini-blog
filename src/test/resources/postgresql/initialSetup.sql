@@ -14,3 +14,6 @@ CREATE TABLE card(
 );
 
 INSERT INTO author VALUES(DEFAULT, 'test', '1033386069');
+
+INSERT INTO card (name, status, content, category, author)
+    VALUES ('initial', 'initial', 'initial', 'initial', (SELECT id FROM author WHERE name = 'test'));
