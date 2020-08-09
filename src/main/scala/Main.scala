@@ -1,6 +1,9 @@
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, Materializer, SystemMaterializer}
 import com.typesafe.scalalogging.Logger
+import controller.BlogController
+import repository.{BlogRepository, BlogRepositoryImpl}
+import router.AppRouter
 
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
@@ -8,13 +11,11 @@ import scala.util.{Failure, Success}
 object Main extends App {
   val host = "0.0.0.0"
   val port = 9000
-
   implicit val system: ActorSystem = ActorSystem(name = "mini-blog")
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-  import system.dispatcher
-
-  val router = new AppRouter(materializer)
-
+  implicit def executor = system.dispatcher
+  implicit val materializer = SystemMaterializer(system).materializer
+  val blogController = new BlogController(new BlogRepositoryImpl())
+  val router = new AppRouter(blogController)
   val server = new Server(router, host, port)
 
   val logger = Logger("Main")

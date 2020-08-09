@@ -5,9 +5,7 @@ import java.sql.{Connection, DriverManager}
 import com.typesafe.scalalogging.Logger
 
 object Datasource {
-
   val logger: Logger = Logger("Main")
-
   val db = "mini-blog-db"
   val host = "postgresql"
   val url = s"jdbc:postgresql://$host:5432/$db"
