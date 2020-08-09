@@ -1,21 +1,18 @@
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.headers.RawHeader
-import akka.http.scaladsl.model.{HttpEntity, HttpHeader, HttpMethods, HttpRequest, MediaTypes}
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import controller.BlogController
-import org.scalatest.flatspec.AnyFlatSpec
-import repository.BlogRepository
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.matchers.should.Matchers
-import pdi.jwt.JwtAlgorithm
-import router.AppRouter
-import service.JwtService
+import org.scalatest.flatspec.AnyFlatSpecLike
+import repository.BlogRepository
 
 import scala.concurrent.Future
 
-class BlogControllerTest extends AnyFlatSpec with MockFactory with Matchers with ScalatestRouteTest {
+class BlogControllerTest
+  extends AuthenticatedWithAuthor("John")
+    with AnyFlatSpecLike
+    with MockFactory
+    with ScalatestRouteTest {
 
   import BlogControllerTest._
 
@@ -44,7 +41,7 @@ class BlogControllerTest extends AnyFlatSpec with MockFactory with Matchers with
     val request = createPostRequest("/signup", """{"author":"Foo"}""")
 
     request ~>  controller.signup ~> check {
-      assert(status.isSuccess)
+      assert(!status.isSuccess)
       assert(responseAs[String].contains("An error occurred"))
     }
   }
@@ -64,7 +61,7 @@ class BlogControllerTest extends AnyFlatSpec with MockFactory with Matchers with
     }
   }
 
-  it should "create a new card with valid jwt" in new JwtServiceForTest {
+  it should "create a new card with valid jwt" in {
     val cardName = "My First Card"
     val content = "Hi, World"
     val category = "journey"
@@ -83,7 +80,7 @@ class BlogControllerTest extends AnyFlatSpec with MockFactory with Matchers with
     }
   }
 
-  it should "update a card with valid jwt" in new JwtServiceForTest {
+  it should "update a card with valid jwt" in {
     val id = 1
     val cardName = "My First Update"
     val content = "Updated"
@@ -104,7 +101,7 @@ class BlogControllerTest extends AnyFlatSpec with MockFactory with Matchers with
     }
   }
 
-  it should "delete a card with valid jwt" in new JwtServiceForTest {
+  it should "delete a card with valid jwt" in {
     val id = 1
     val deleted = true
     (mockRepository.deleteCard _)
@@ -132,14 +129,4 @@ object BlogControllerTest {
       headers = headers,
       entity = HttpEntity(MediaTypes.`application/json`, ByteString(json)))
   }
-}
-
-trait JwtServiceForTest extends JwtService {
-  override val key = "secretKey"
-  override val jwtAlgorithm = JwtAlgorithm.HS256
-  val oneDayInSeconds = 86400
-  val author = "John"
-  val claim = setClaimsWith(author, oneDayInSeconds)
-  val generatedJwt = createJwtWithClaim(claim)
-  val authorizationHeader = new RawHeader("Authorization", generatedJwt)
 }

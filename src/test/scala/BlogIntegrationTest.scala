@@ -1,19 +1,19 @@
-import java.io.{File}
+import java.io.File
 
 import BlogControllerTest.createPostRequest
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.headers.RawHeader
 import akka.stream.ActorMaterializer
 import com.dimafeng.testcontainers.{DockerComposeContainer, ExposedService, ForAllTestContainer}
-import org.scalatest.flatspec.{AsyncFlatSpec}
-import pdi.jwt.JwtAlgorithm
-import service.JwtService
+import org.scalatest.flatspec.AsyncFlatSpecLike
 
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 
-class DockerComposeIntegrationTest extends AsyncFlatSpec with JwtHelperForTest with ForAllTestContainer {
+class BlogIntegrationTest
+  extends AuthenticatedWithAuthor("test")
+    with AsyncFlatSpecLike
+    with ForAllTestContainer {
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -93,14 +93,3 @@ class DockerComposeIntegrationTest extends AsyncFlatSpec with JwtHelperForTest w
     }
   }
 }
-
-trait JwtHelperForTest extends JwtService {
-  override val key = "secretKey"
-  override val jwtAlgorithm = JwtAlgorithm.HS256
-  val oneDayInSeconds = 86400
-  val author = "test"
-  val claim = setClaimsWith(author, oneDayInSeconds)
-  val generatedJwt = createJwtWithClaim(claim)
-  val authorizationHeader = new RawHeader("Authorization", generatedJwt)
-}
-
