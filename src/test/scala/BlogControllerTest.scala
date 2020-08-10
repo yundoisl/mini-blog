@@ -24,7 +24,7 @@ class BlogControllerTest
     val password = "1844546102"
     (mockRepository.createAuthor _).
       expects(author).
-      returning(Future.successful(password)).once()
+      returning(Future.successful(Right(password))).once()
     val request = createPostRequest("/signup", """{"author":"Foo"}""")
 
     request ~>  controller.signup ~> check {
@@ -52,7 +52,7 @@ class BlogControllerTest
     val authenticated = true
     (mockRepository.existsLoginCredentials _)
       .expects(author, password)
-      .returning(Future.successful(authenticated)).once()
+      .returning(Future.successful(Right(authenticated))).once()
     val request = createPostRequest("/login", """{ "author" : "Foo", "password": "1844546102"}""")
 
     request ~>  controller.login ~> check {
@@ -66,9 +66,10 @@ class BlogControllerTest
     val content = "Hi, World"
     val category = "journey"
     val cardStatus = "draft"
+    val cardId = 0
     (mockRepository.createCard _)
       .expects(cardName, content, category, cardStatus, author)
-      .returning(Future.successful(0)).once()
+      .returning(Future.successful(Right(cardId))).once()
     val request = createPostRequest(
       uri = "/create",
       json = """{"name": "My First Card", "content": "Hi, World", "category": "journey", "status": "draft"}""",
@@ -89,7 +90,7 @@ class BlogControllerTest
     val updated = true
     (mockRepository.updateCard _)
       .expects(id, cardName, content, category, cardStatus, author)
-      .returning(Future.successful(updated)).once()
+      .returning(Future.successful(Right(updated))).once()
     val request = createPostRequest(
       uri = "/update",
       json = """{"id": 1, "name": "My First Update", "content": "Updated", "category": "books", "status": "updated"}""",
@@ -106,7 +107,7 @@ class BlogControllerTest
     val deleted = true
     (mockRepository.deleteCard _)
       .expects(id, author)
-      .returning(Future.successful(deleted)).once()
+      .returning(Future.successful(Right(deleted))).once()
 
     val request = createPostRequest(
       uri = "/delete",

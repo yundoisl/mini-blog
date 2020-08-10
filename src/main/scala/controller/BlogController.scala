@@ -15,6 +15,8 @@ import scala.util.{Failure, Success}
 
 class BlogController(repository: BlogRepository) extends JwtService {
 
+  import BlogController._
+
   override val key = "secretKey"
   override val jwtAlgorithm = JwtAlgorithm.HS256
   val oneDayInSeconds = 86400
@@ -22,17 +24,19 @@ class BlogController(repository: BlogRepository) extends JwtService {
   def login: Route = entity(as[LoginRequest]) {
     case LoginRequest(author, password) =>
       onComplete(repository.existsLoginCredentials(author, password)) {
-        case Success(isAuthenticated) => {
-          if (isAuthenticated) {
-            val jwt = createJwtWithClaim(setClaimsWith(author, oneDayInSeconds))
-            val AccessTokenHeaderName = "X-Access-Token"
-            respondWithHeader(RawHeader(AccessTokenHeaderName, jwt)) {
-              completeWith(StatusCodes.OK, "Successfully logged in")
-            }
-          } else {
-            completeWith(StatusCodes.Unauthorized, "Authentication failed")
+        case Success(errorOrExistsCredentials) =>
+          errorOrExistsCredentials match {
+            case Right(existsCredentials) if existsCredentials == true =>
+              val jwt = createJwtWithClaim(setClaimsWith(author, oneDayInSeconds))
+              val AccessTokenHeaderName = "X-Access-Token"
+              respondWithHeader(RawHeader(AccessTokenHeaderName, jwt)) {
+                completeWith(StatusCodes.OK, "Successfully logged in")
+              }
+            case Right(_) =>
+              completeWith(StatusCodes.Unauthorized, "Authentication failed")
+            case Left(ex) =>
+              completeWith(StatusCodes.InternalServerError, s"An error occurred : ${ex.getMessage}")
           }
-        }
         case Failure(ex) =>
           completeWith(StatusCodes.InternalServerError, s"An error occurred : ${ex.getMessage}")
       }
@@ -41,8 +45,10 @@ class BlogController(repository: BlogRepository) extends JwtService {
   def signup: Route = entity(as[SignUpRequest]) {
     case SignUpRequest(author) => {
       onComplete(repository.createAuthor(author)) {
-        case Success(password) =>
-          completeWith(StatusCodes.OK, s"Your password has been generated: $password")
+        case Success(errorOrPassword) => errorOrPassword match {
+          case Right(password) => completeWith(StatusCodes.OK, s"Your password has been generated: $password")
+          case Left(ex) => completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
+        }
         case Failure(ex) =>
           completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
       }
@@ -53,8 +59,12 @@ class BlogController(repository: BlogRepository) extends JwtService {
     entity(as[CreateCardRequest]) {
       case CreateCardRequest(name, content, category, status) =>
         onComplete(repository.createCard(name, content, category, status, author)) {
-          case Success(resultId) =>
-            completeWith(StatusCodes.OK, s"Your card has been created with id : $resultId")
+          case Success(errorOrCardId) => errorOrCardId match {
+            case Right(cardId) =>
+              completeWith(StatusCodes.OK, s"Your card has been created with id : $cardId")
+            case Left(ex) =>
+              completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
+          }
           case Failure(ex) =>
             completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
         }
@@ -65,10 +75,14 @@ class BlogController(repository: BlogRepository) extends JwtService {
     entity(as[UpdateCardRequest]) {
       case UpdateCardRequest(id, name, content, category, status) =>
         onComplete(repository.updateCard(id, name, content, category, status, author)) {
-          case Success(true) =>
-            completeWith(StatusCodes.OK,s"Your card id: $id has been updated")
-          case Success(false) =>
-            completeWith(StatusCodes.Unauthorized, s"Given card $id does not exist or you are not the owner of the card")
+          case Success(errorOrIsUpdated) => errorOrIsUpdated match {
+            case Right(Updated) =>
+              completeWith(StatusCodes.OK,s"Your card id: $id has been updated")
+            case Right(NotUpdated) =>
+              completeWith(StatusCodes.Unauthorized, s"Given card $id does not exist or you are not the owner of the card")
+            case Left(ex) =>
+              completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
+          }
           case Failure(ex) =>
             completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
         }
@@ -79,10 +93,14 @@ class BlogController(repository: BlogRepository) extends JwtService {
     entity(as[DeleteCardRequest]) {
       case DeleteCardRequest(id) =>
         onComplete(repository.deleteCard(id, author)) {
-          case Success(true) =>
-            completeWith(StatusCodes.OK,s"Your card id: $id has been deleted")
-          case Success(false) =>
-            completeWith(StatusCodes.Unauthorized,"The card: $id does not exist or you are not the owner of the card")
+          case Success(errorOrIsDeleted) => errorOrIsDeleted match {
+            case Right(Deleted) =>
+              completeWith(StatusCodes.OK,s"Your card id: $id has been deleted")
+            case Right(NotDeleted) =>
+              completeWith(StatusCodes.Unauthorized,s"The card id: $id does not exist or you are not the owner of the card")
+            case Left(ex) =>
+              completeWith(StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}")
+          }
           case Failure(ex) =>
             completeWith(StatusCodes.InternalServerError,s"An error occurred: ${ex.getMessage}")
         }
@@ -102,4 +120,11 @@ class BlogController(repository: BlogRepository) extends JwtService {
   def completeWith(statusCode: StatusCode, message: String) = {
     complete(statusCode -> HttpEntity(ContentTypes.`text/plain(UTF-8)`, message))
   }
+}
+
+object BlogController {
+  final val Updated = true
+  final val NotUpdated = false
+  final val Deleted = true
+  final val NotDeleted = false
 }
