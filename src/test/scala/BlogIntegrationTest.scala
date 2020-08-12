@@ -1,8 +1,9 @@
 import java.io.File
 
-import BlogControllerTest.createPostRequest
+import BlogTestHelper.createRequest
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.HttpMethods.{DELETE, GET, POST, PUT}
 import akka.stream.ActorMaterializer
 import com.dimafeng.testcontainers.{DockerComposeContainer, ExposedService, ForAllTestContainer}
 import org.scalatest.flatspec.AsyncFlatSpecLike
@@ -37,7 +38,7 @@ class BlogIntegrationTest
     val expectedText = "Successfully logged in"
     val requestBody = """{ "author" : "test", "password": "1033386069"}"""
     val requestUri = s"http://$host:$port/login"
-    val request = createPostRequest(requestUri, requestBody)
+    val request = createRequest(GET, requestUri, requestBody)
     val responseFuture = Http().singleRequest(request)
 
     responseFuture.flatMap(_.entity.toStrict(2 seconds)).map(_.data.utf8String).map { msg =>
@@ -49,7 +50,7 @@ class BlogIntegrationTest
     val expectedText = "Your password has been generated: 1901348939"
     val requestBody = """{ "author" : "Foo" }"""
     val requestUri = s"http://$host:$port/signup"
-    val request = createPostRequest(requestUri, requestBody)
+    val request = createRequest(POST, requestUri, requestBody)
 
     val responseFuture = Http().singleRequest(request)
     responseFuture.flatMap(_.entity.toStrict(2 seconds)).map(_.data.utf8String).map { msg =>
@@ -61,7 +62,7 @@ class BlogIntegrationTest
     val expectedText = "Your card has been created with id"
     val requestBody = """{"name": "My First Card", "content": "Hi, World", "category": "journey", "status": "draft"}"""
     val requestUri = s"http://$host:$port/create"
-    val request = createPostRequest(requestUri, requestBody, headers = Seq(authorizationHeader))
+    val request = createRequest(POST, requestUri, requestBody, headers = Seq(authorizationHeader))
 
     val responseFuture = Http().singleRequest(request)
     responseFuture.flatMap(_.entity.toStrict(2 seconds)).map(_.data.utf8String).map { msg =>
@@ -73,7 +74,7 @@ class BlogIntegrationTest
     val expectedText = "Your card id: 1 has been updated"
     val requestBody = """{"id": 1, "name": "My First Update", "content": "Updated", "category": "books", "status": "updated"}"""
     val requestUri = s"http://$host:$port/update"
-    val request = createPostRequest(requestUri, requestBody, headers = Seq(authorizationHeader))
+    val request = createRequest(PUT, requestUri, requestBody, headers = Seq(authorizationHeader))
 
     val responseFuture = Http().singleRequest(request)
     responseFuture.flatMap(_.entity.toStrict(2 seconds)).map(_.data.utf8String).map { msg =>
@@ -85,7 +86,7 @@ class BlogIntegrationTest
     val expectedText = "Your card id: 1 has been deleted"
     val requestBody = """{"id": 1}"""
     val requestUri = s"http://$host:$port/delete"
-    val request = createPostRequest(requestUri, requestBody, headers = Seq(authorizationHeader))
+    val request = createRequest(DELETE, requestUri, requestBody, headers = Seq(authorizationHeader))
 
     val responseFuture = Http().singleRequest(request)
     responseFuture.flatMap(_.entity.toStrict(2 seconds)).map(_.data.utf8String).map { msg =>

@@ -32,11 +32,11 @@ This workflow briefly describes how `John`(author) uses the app.
     Your password has been generated: 851186384
     ```
 
-2. `John` wants to `login` to the app, so he sends `POST` request to `/login` with login credentials. The app will return the response with JWT inside `X-Access-Token` header.
+2. `John` wants to `login` to the app, so he sends `GET` request to `/login` with login credentials. The app will return the response with JWT inside `X-Access-Token` header.
 
     Request
     ```
-    curl --request POST 'http://localhost:9000/login' \
+    curl --request GET 'http://localhost:9000/login' \
     --header 'Content-Type: application/json' \
     --data-raw '{ "author" : "John", "password": "851186384"}'
     ```   
@@ -59,11 +59,11 @@ This workflow briefly describes how `John`(author) uses the app.
     Your card has been created with id : 1
     ```
    
-4. `John` wants to `update` previously created card, so he sends `POST` request to `/update` attaching JWT to `Authorization` header and request body as below.
+4. `John` wants to `update` previously created card, so he sends `PUT` request to `/update` attaching JWT to `Authorization` header and request body as below.
     
     Request
     ```
-    curl --request POST 'localhost:9000/update' \
+    curl --request PUT 'localhost:9000/update' \
     --header 'Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2huIiwiZXhwIjoxNTk3MDc4ODU2LCJpYXQiOjE1OTY5OTI0NTZ9.eLGPITDQg4gtzDdiuV0jkZAKNFmDJW33_5UBXtcY-Yg' \
     --header 'Content-Type: application/json' \
     --data-raw '{"id": 1, "name": "Updated Card", "content": "Updated", "category": "Updated", "status": "Updated"}'
@@ -73,11 +73,11 @@ This workflow briefly describes how `John`(author) uses the app.
     Your card id: 1 has been updated
     ```
 
-5. `John` wants to `delete` the card he just updated, so he sends `POST` request to `/delete` attaching JWT to `Authorization` header and request body as below.
+5. `John` wants to `delete` the card he just updated, so he sends `DELETE` request to `/delete` attaching JWT to `Authorization` header and request body as below.
    
     Request
     ```
-    curl --request POST 'localhost:9000/delete' \
+    curl --request DELETE 'localhost:9000/delete' \
     --header 'Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2huIiwiZXhwIjoxNTk3MDc4ODU2LCJpYXQiOjE1OTY5OTI0NTZ9.eLGPITDQg4gtzDdiuV0jkZAKNFmDJW33_5UBXtcY-Yg' \
     --header 'Content-Type: application/json' \
     --data-raw '{"id": 1}'

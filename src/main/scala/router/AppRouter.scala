@@ -1,7 +1,7 @@
 package router
 
 import akka.http.scaladsl.server.{Directives, Route}
-import akka.stream.{ActorMaterializer, Materializer}
+import akka.stream.Materializer
 import controller.BlogController
 
 class AppRouter(blogController: BlogController)
@@ -10,7 +10,7 @@ class AppRouter(blogController: BlogController)
   override def route: Route =
     concat(
       path("login") {
-        post {
+        get {
           blogController.login
         }
       },
@@ -20,12 +20,12 @@ class AppRouter(blogController: BlogController)
         }
       },
       path("update") {
-        post {
+        put {
           blogController.update
         }
       },
       path("delete") {
-        post {
+        delete {
           blogController.delete
         }
       },

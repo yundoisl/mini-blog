@@ -1,6 +1,6 @@
-import akka.http.scaladsl.model._
+import BlogTestHelper.createRequest
+import akka.http.scaladsl.model.HttpMethods.{DELETE, GET, POST, PUT}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.util.ByteString
 import controller.BlogController
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpecLike
@@ -14,8 +14,6 @@ class BlogControllerTest
     with MockFactory
     with ScalatestRouteTest {
 
-  import BlogControllerTest._
-
   val mockRepository = mock[BlogRepository]
   val controller = new BlogController(mockRepository)
 
@@ -25,7 +23,7 @@ class BlogControllerTest
     (mockRepository.createAuthor _).
       expects(author).
       returning(Future.successful(Right(password))).once()
-    val request = createPostRequest("/signup", """{"author":"Foo"}""")
+    val request = createRequest(POST, "/signup", """{"author":"Foo"}""")
 
     request ~>  controller.signup ~> check {
       assert(status.isSuccess)
@@ -38,7 +36,7 @@ class BlogControllerTest
     (mockRepository.createAuthor _)
       .expects(author)
       .returning(Future.failed(new RuntimeException())).once()
-    val request = createPostRequest("/signup", """{"author":"Foo"}""")
+    val request = createRequest(POST, "/signup", """{"author":"Foo"}""")
 
     request ~>  controller.signup ~> check {
       assert(!status.isSuccess)
@@ -53,7 +51,7 @@ class BlogControllerTest
     (mockRepository.existsLoginCredentials _)
       .expects(author, password)
       .returning(Future.successful(Right(authenticated))).once()
-    val request = createPostRequest("/login", """{ "author" : "Foo", "password": "1844546102"}""")
+    val request = createRequest(GET, "/login", """{ "author" : "Foo", "password": "1844546102"}""")
 
     request ~>  controller.login ~> check {
       assert(status.isSuccess)
@@ -70,7 +68,8 @@ class BlogControllerTest
     (mockRepository.createCard _)
       .expects(cardName, content, category, cardStatus, author)
       .returning(Future.successful(Right(cardId))).once()
-    val request = createPostRequest(
+    val request = createRequest(
+      httpMethod = POST,
       uri = "/create",
       json = """{"name": "My First Card", "content": "Hi, World", "category": "journey", "status": "draft"}""",
       headers = Seq(authorizationHeader))
@@ -91,7 +90,8 @@ class BlogControllerTest
     (mockRepository.updateCard _)
       .expects(id, cardName, content, category, cardStatus, author)
       .returning(Future.successful(Right(updated))).once()
-    val request = createPostRequest(
+    val request = createRequest(
+      httpMethod = PUT,
       uri = "/update",
       json = """{"id": 1, "name": "My First Update", "content": "Updated", "category": "books", "status": "updated"}""",
       headers = Seq(authorizationHeader))
@@ -109,7 +109,8 @@ class BlogControllerTest
       .expects(id, author)
       .returning(Future.successful(Right(deleted))).once()
 
-    val request = createPostRequest(
+    val request = createRequest(
+      httpMethod = DELETE,
       uri = "/delete",
       json = """{"id": 1}""",
       headers = Seq(authorizationHeader))
@@ -122,12 +123,20 @@ class BlogControllerTest
 
 }
 
-object BlogControllerTest {
-  def createPostRequest(uri: String, json: String, headers: Seq[HttpHeader] = Nil): HttpRequest = {
-    HttpRequest(
-      HttpMethods.POST,
-      uri = uri,
-      headers = headers,
-      entity = HttpEntity(MediaTypes.`application/json`, ByteString(json)))
-  }
-}
+//object BlogControllerTest {
+////  def createPostRequest(uri: String, json: String, headers: Seq[HttpHeader] = Nil): HttpRequest = {
+////    HttpRequest(
+////      HttpMethods.POST,
+////      uri = uri,
+////      headers = headers,
+////      entity = HttpEntity(MediaTypes.`application/json`, ByteString(json)))
+////  }
+//
+//  def createRequest(httpMethod: HttpMethod, uri: String, json: String, headers: Seq[HttpHeader] = Nil): HttpRequest = {
+//    HttpRequest(
+//      HttpMethods.POST,
+//      uri = uri,
+//      headers = headers,
+//      entity = HttpEntity(MediaTypes.`application/json`, ByteString(json)))
+//  }
+//}
