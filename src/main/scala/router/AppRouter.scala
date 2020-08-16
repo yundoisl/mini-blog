@@ -10,7 +10,7 @@ class AppRouter(blogController: BlogController)
   override def route: Route =
     concat(
       path("login") {
-        get {
+        post {
           blogController.login
         }
       },
