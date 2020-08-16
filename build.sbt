@@ -36,5 +36,6 @@ libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirceVersion,
   "com.pauldijou" %% "jwt-circe" % jwtCirceVersion,
   "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainersVersion % Test,
-  "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion % Test
+  "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion % Test,
+  "com.google.cloud.sql" % "postgres-socket-factory" % "1.0.16"
 )

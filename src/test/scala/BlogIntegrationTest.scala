@@ -3,7 +3,7 @@ import java.io.File
 import BlogTestHelper.createRequest
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.HttpMethods.{DELETE, GET, POST, PUT}
+import akka.http.scaladsl.model.HttpMethods.{DELETE, POST, PUT}
 import akka.stream.ActorMaterializer
 import com.dimafeng.testcontainers.{DockerComposeContainer, ExposedService, ForAllTestContainer}
 import org.scalatest.flatspec.AsyncFlatSpecLike
@@ -38,7 +38,7 @@ class BlogIntegrationTest
     val expectedText = "Successfully logged in"
     val requestBody = """{ "author" : "test", "password": "1033386069"}"""
     val requestUri = s"http://$host:$port/login"
-    val request = createRequest(GET, requestUri, requestBody)
+    val request = createRequest(POST, requestUri, requestBody)
     val responseFuture = Http().singleRequest(request)
 
     responseFuture.flatMap(_.entity.toStrict(2 seconds)).map(_.data.utf8String).map { msg =>

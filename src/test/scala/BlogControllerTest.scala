@@ -1,5 +1,5 @@
 import BlogTestHelper.createRequest
-import akka.http.scaladsl.model.HttpMethods.{DELETE, GET, POST, PUT}
+import akka.http.scaladsl.model.HttpMethods.{DELETE, POST, PUT}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import controller.BlogController
 import org.scalamock.scalatest.MockFactory
@@ -51,7 +51,7 @@ class BlogControllerTest
     (mockRepository.existsLoginCredentials _)
       .expects(author, password)
       .returning(Future.successful(Right(authenticated))).once()
-    val request = createRequest(GET, "/login", """{ "author" : "Foo", "password": "1844546102"}""")
+    val request = createRequest(POST, "/login", """{ "author" : "Foo", "password": "1844546102"}""")
 
     request ~>  controller.login ~> check {
       assert(status.isSuccess)

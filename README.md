@@ -1,6 +1,6 @@
 ### Introduction
 
-This is mini blog app which performs CRUD operation with authentication via JWT by consuming REST APIs exposed by the back-end server. 
+This is mini blog app which performs CRUD operation with authorization via JWT by consuming REST APIs exposed by the back-end server. 
 
 It consists of two services (`postgresql` and `mini-blog`) which run on docker container.
 
@@ -9,7 +9,7 @@ It consists of two services (`postgresql` and `mini-blog`) which run on docker c
 All functional requirement are satisfied:
 
 - Sign up
-- Authentication via JWT
+- Authorization via JWT
 - Login
 - Create
 - Update
@@ -32,11 +32,11 @@ This workflow briefly describes how `John`(author) uses the app.
     Your password has been generated: 851186384
     ```
 
-2. `John` wants to `login` to the app, so he sends `GET` request to `/login` with login credentials. The app will return the response with JWT inside `X-Access-Token` header.
+2. `John` wants to `login` to the app, so he sends `POST` request to `/login` with login credentials. The app will return the response with JWT inside `X-Access-Token` header.
 
     Request
     ```
-    curl --request GET 'http://localhost:9000/login' \
+    curl --request POST 'http://localhost:9000/login' \
     --header 'Content-Type: application/json' \
     --data-raw '{ "author" : "John", "password": "851186384"}'
     ```   
@@ -86,8 +86,8 @@ This workflow briefly describes how `John`(author) uses the app.
     ```
     Your card id: 1 has been deleted
     ```
-   
-### How to run
+
+### How to run locally
     
 - Execute `./runDockerCompose.sh`, it will start the docker with two containers(postgres, mini blog app)
 
@@ -107,3 +107,20 @@ Unit tests:
 - postgresql 11.7
 - sbt 
 - docker
+
+### Running instance on Google Cloud Platform   
+   
+https://mini-blog-brjdep2avq-as.a.run.app
+
+example : 
+
+    Request
+    ```
+    curl --request POST 'https://mini-blog-brjdep2avq-as.a.run.app/signup' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{ "author" : "Yourname"}'
+    ```
+    Response
+    ```
+    Your password has been generated: 851186384
+    ```
